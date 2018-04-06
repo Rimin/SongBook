@@ -9,7 +9,13 @@
     color: @color;
     line-height: @lineheight;
     font-size: @fontsize;
-
+}
+.flex(@direction){
+    display: flex;
+    display: -webkit-flex; /* Safari */
+    display: -ms-flexbox;
+    flex-direction:@direction;
+    -ms-flex-direction:@direction;
 }
 
 /**common base style */
