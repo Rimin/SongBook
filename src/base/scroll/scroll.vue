@@ -19,7 +19,7 @@ export default {
         },
         refreshDelay: {
             type: Number,
-            default: 20
+            default: 400
         },
          probeType: {
             type: Number,
@@ -101,7 +101,7 @@ export default {
 
 <style lang="less" scoped>
 .wrapper,{
-    overflow: hidden;
-    height: 88vh;
+     overflow: hidden;
+     height: 88vh;
 }
 </style>

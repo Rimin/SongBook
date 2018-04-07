@@ -9,9 +9,12 @@ import fastclick from 'fastclick'
 
 import 'common/less/base.less'
 import 'common/css/font-awesome.min.css'
+import VueLazyload from 'vue-lazyload'
 
 fastclick.attach(document.body)
-
+Vue.use(VueLazyload, {
+  loading: 'static/lazyload.png'
+})
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
