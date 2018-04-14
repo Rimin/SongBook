@@ -10,7 +10,6 @@ export function getSinger () {
     key: 'all_all_all',
     pagesize: 100,
     pagenum: 1,
-    jsonpCallback: 'GetSingerListCallback',
     hostUin: 0,
     platform: 'yqq',
     needNewCode: 0
