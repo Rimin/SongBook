@@ -80,6 +80,7 @@ export default {
      .font(@color: @fontcolor;@lineheight: 40px;@fontsize: 1rem);
      height: 40px;
      text-align: center;
+     padding: 15px 0px;
  }
  .diss-item{
     float: left;

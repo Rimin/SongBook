@@ -21,7 +21,7 @@ export default {
             type: Number,
             default: 400
         },
-         probeType: {
+        probeType: {
             type: Number,
             default: 1
         },

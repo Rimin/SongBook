@@ -30,7 +30,6 @@ export default {
             getSinger().then((res) => {
                 if(res.code === ERR_OK) {
                     this.singer =  this.normalizedata(res.data.list)
-                    console.log(this.singer)
                 }
             })
         },
