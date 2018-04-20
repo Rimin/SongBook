@@ -1,6 +1,7 @@
 <template>
    <div class="singer">
-       <singerlist :data ="singer" ref="list"></singerlist>
+       <singerlist :data ="singer" @select="selectSinger" ref="list"></singerlist>
+       <router-view></router-view>
    </div>
 </template>
 
@@ -26,6 +27,9 @@ export default {
          this._getSinger()
     },
     methods: {
+        selectSinger (item){
+            this.$router.push({ path: `/singer/${item.id}`})  
+        },
         _getSinger () {
             getSinger().then((res) => {
                 if(res.code === ERR_OK) {

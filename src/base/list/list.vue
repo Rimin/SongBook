@@ -8,8 +8,8 @@
             <div class="contain">
                 <div class="list-group" v-for="gruops in data" ref="listGroup"> 
                     <h3 class="list-tag">{{gruops.index}}</h3>
-                    <div class="list-item" v-for="item in gruops.group">
-                        <img class="avatar" v-lazy = 'item.imgurl'>
+                    <div  @click="selectItem(item)" class="list-item" v-for="item in gruops.group">
+                        <img class="avatar" v-lazy='item.imgurl'>
                         <span class="name">{{item.name}}</span>
                     </div>
                 </div>
@@ -67,6 +67,9 @@ export default {
         this.listHeight = []
     },
     methods:{
+        selectItem(item) {
+            this.$emit('select',item)
+        },
         refresh() {
             this.$refs.list.refresh()
         },
