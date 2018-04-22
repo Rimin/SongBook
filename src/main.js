@@ -6,6 +6,7 @@ import App from './App'
 import router from './router'
 import 'babel-polyfill'
 import fastclick from 'fastclick'
+import store from './store/store'
 
 import 'common/less/base.less'
 import 'common/css/font-awesome.min.css'
@@ -21,6 +22,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App }, // 主组件的模板
   template: '<App/>' // 使用导入的App,es6对象写法
 })

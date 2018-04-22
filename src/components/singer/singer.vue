@@ -11,6 +11,8 @@ import Singerlist from 'base/list/list'
 import {ERR_OK} from 'api/config'
 import {getSinger} from 'api/singer'
 import Singer from 'common/js/singer.js'
+import { mapMutations } from 'vuex'
+
 const HOT_SINGER = 10
 const HOT = '热门'
 export default {
@@ -27,8 +29,12 @@ export default {
          this._getSinger()
     },
     methods: {
+        ...mapMutations({
+            storeSinger: 'STORE_SINGER'
+        }),
         selectSinger (item){
-            this.$router.push({ path: `/singer/${item.id}`})  
+            this.$router.push({ path: `/singer/${item.id}`})
+            this.storeSinger(item)
         },
         _getSinger () {
             getSinger().then((res) => {

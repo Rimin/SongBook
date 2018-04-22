@@ -1,18 +1,41 @@
 <template>
    <transition name="slide">
-     <detail-playlist></detail-playlist>
+     <detail-playlist :data="songlist"></detail-playlist>
    </transition>
 </template>
 
 <script>
 import DetailPlaylist from 'components/detail-playlist/detail-playlist'
 import {getSingerSongList} from 'api/singer'
+import { mapGetters } from 'vuex'
+import {ERR_OK} from 'api/config'
+
 export default {
   components:{
       DetailPlaylist
   },
+  computed: {
+      ...mapGetters([
+        'getSinger'
+      ])
+  },
+  created() {
+    this._getSonglist()
+  },
   methods:{
-    
+    ...mapGetters([
+      'getSinger'
+    ]),
+    _getSonglist(){
+      getSingerSongList(this.getSinger.id).then((res) =>{
+        console.log(res)
+      })
+    }
+  },
+  data() {
+    return{
+       songlist: []
+    }
   }
 }
 </script>
