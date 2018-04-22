@@ -1,29 +1,149 @@
 <template>
   <div class="detail-playlist">
-      歌手歌单
+     <div class="singer-name"><span class="fa fa-chevron-left back" @click="back"></span>{{data.singer_name}}</div>
+     <div class="singer-avatar" :style="bgimg">
+        <div class="fliter"></div>
+        <div class="play"><span class="fa fa-play-circle-o"></span> 播放全部</div>
+     </div>
+     <scroll @scroll="scroll"
+             :data="data.list"
+             :listen-scroll="listenScroll"
+             :probe-type="probeType" 
+             ref="scroll">
+            <div class="contain">
+              <div class="singer-song" v-for="item in data.list">
+                  <h3>{{item.name}}</h3>
+                  <span>{{item.singer}}</span>
+                  <span>{{item.album}}</span>
+              </div>
+            </div>
+     </scroll>
+     <div class="loading-wrapper" v-show="!data">
+        <loading></loading>
+     </div>
   </div>
 </template>
 
 
 <script>
+import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 export default {
-  
+  components:{
+        Scroll,
+        Loading,
+    },
+  props: {
+      data: { 
+        type: Object,
+        default: {}
+      }
+    },
+  data (){
+      return{
+        scrollY:-1,
+        up: false
+      }
+  },
+  created() {
+    this.probeType = 3
+    this.listenScroll = true
+  },
+  computed: {
+    bgimg() {
+      return `background-image:url(${this.data.imgurl})`
+    }
+    },
+  methods: {
+      back() {
+        this.$router.push({path:  '/singer'})
+      },
+      scroll(position) {
+        this.scrollY = position.y
+      },
+    },
+  watch: {
+      scrollY(newY) {
+        console.log(newY)
+      }
+  }
 }
 </script>
 
 
 <style lang="less" scoped>
 @import url('../../common/less/base.less');
-.detail-playlist{
-  position:fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 999;
-  width: 100vh;
-  height: 100vh;
-  background: @bgcolor;
-  overflow: hidden;
+@fliter: rgba(0,0,0,.20);
+.position(@position;@top;@left;@z-index){
+    position: @position;
+    top: @top;
+    left: @left;
+    z-index: @z-index;
 }
+.wrapper,{
+     overflow: hidden;
+     height: 90vh;
+}
+.detail-playlist{
+  .position(@position:fixed;@top:0;@left:0;@z-index:100);
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: @bgcolor;
+}
+.singer-name{
+  .position(@position:absolute;@top:0;@left:0;@z-index:999);
+  width: 100%;
+  height: 40px;
+  background: @fliter;
+  .font(@color: @maincolor;@lineheight: 40px;@fontsize: 1.1rem);
+  text-align: center;
+}
+.singer-avatar{
+  position: relative;
+  z-index: 0;
+  width: 100%;  
+  height: 0;
+  padding-top: 70%;
+  background-size: cover;
+}
+.fliter{
+  .position(@position:absolute;@top:0;@left:0;@z-index:99);
+  width: 100%;
+  height: 100%;
+  background: @fliter;
+}
+.back{
+  .position(@position:absolute;@top:50%;@left:20px;@z-index:999);
+  transform: translate(-50%, -50%);
+}
+.singer-song{
+  padding: 10px 16px;
+  .textcut();
+}
+.singer-song>h3{
+  .textcut();
+  .font(@color: @fontcolor;@lineheight: 30px;@fontsize: 1rem);
+  font-weight: normal;
+}
+.singer-song>span{
+  .font(@color: @lingtfontcolor;@lineheight: 20px;@fontsize: .8rem);
+  padding-right: 6px;
+}
+.play{
+  .position(@position:absolute;@top:88%;@left:50%;@z-index:99);
+  transform: translate(-50%, -50%);
+  background: @maincolor;
+  width: 120px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  text-align: center;
+  .font(@color: #ffffff;@lineheight: normal;@fontsize: .9rem);
+}
+.play>span{
+  font-size: 1.0rem;
+  padding-right: 4px;
+}
+
 </style>

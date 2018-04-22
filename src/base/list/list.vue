@@ -187,7 +187,7 @@ export default {
     position: absolute;
     z-index: 30;
     right: 0;
-    top: 55%;
+    top: 52%;
     -webkit-transform: translateY(-50%);
     transform: translateY(-50%);
     width: 20px;

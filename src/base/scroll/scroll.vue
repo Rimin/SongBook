@@ -102,6 +102,6 @@ export default {
 <style lang="less" scoped>
 .wrapper,{
      overflow: hidden;
-     height: 85vh;
+     height: 88vh;
 }
 </style>

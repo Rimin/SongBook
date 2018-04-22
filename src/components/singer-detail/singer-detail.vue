@@ -8,6 +8,7 @@
 import DetailPlaylist from 'components/detail-playlist/detail-playlist'
 import {getSingerSongList} from 'api/singer'
 import { mapGetters } from 'vuex'
+import {Song} from 'common/js/singer.js'
 import {ERR_OK} from 'api/config'
 
 export default {
@@ -23,18 +24,29 @@ export default {
     this._getSonglist()
   },
   methods:{
-    ...mapGetters([
-      'getSinger'
-    ]),
     _getSonglist(){
       getSingerSongList(this.getSinger.id).then((res) =>{
-        console.log(res)
+        this.songlist = this.normalizedata(res.data)
+        console.log(this.songlist)
       })
+    },
+    normalizedata (data) {
+      let song = {
+        list:[],
+        singer_name:'',
+        imgurl: ''
+      }
+      song.imgurl = this.getSinger.imgurl
+      song.singer_name  = data.singer_name
+      data.list.forEach((item, index) => {
+        song.list.push(new Song(item.musicData.albumname,item.musicData.albummid, data.singer_name, item.musicData.albumdesc))
+      });
+      return song
     }
   },
   data() {
     return{
-       songlist: []
+       songlist: {}
     }
   }
 }
