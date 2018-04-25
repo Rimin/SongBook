@@ -83,6 +83,9 @@ export default {
         refresh() {
             this.scroll && this.scroll.refresh()
         },
+        scrollCancel() {
+            this.scroll && this.scroll.scrollCancel()
+        }
    },
    mounted() {
     setTimeout(() => {

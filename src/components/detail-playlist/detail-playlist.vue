@@ -1,15 +1,16 @@
 <template>
-  <div class="detail-playlist">
+  <div class="detail-playlist" ref="page">
      <div class="singer-name"><span class="fa fa-chevron-left back" @click="back"></span>{{data.singer_name}}</div>
      <div class="singer-avatar" :style="bgimg">
-        <div class="fliter"></div>
+        <div class="fliter" ref="fliter"></div>
         <div class="play"><span class="fa fa-play-circle-o"></span> 播放全部</div>
      </div>
+     <div class="layer" ref="layer">
      <scroll @scroll="scroll"
              :data="data.list"
              :listen-scroll="listenScroll"
              :probe-type="probeType" 
-             ref="scroll">
+             ref="list">
             <div class="contain">
               <div class="singer-song" v-for="item in data.list">
                   <h3>{{item.name}}</h3>
@@ -18,6 +19,7 @@
               </div>
             </div>
      </scroll>
+     </div>
      <div class="loading-wrapper" v-show="!data">
         <loading></loading>
      </div>
@@ -28,6 +30,8 @@
 <script>
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+
+const TOP_HEIGHT = 40
 export default {
   components:{
         Scroll,
@@ -42,17 +46,19 @@ export default {
   data (){
       return{
         scrollY:-1,
-        up: false
+        up: false,
+        diff: 0
       }
   },
   created() {
     this.probeType = 3
     this.listenScroll = true
+    this.calculateHeight()
   },
   computed: {
     bgimg() {
       return `background-image:url(${this.data.imgurl})`
-    }
+      }
     },
   methods: {
       back() {
@@ -61,10 +67,23 @@ export default {
       scroll(position) {
         this.scrollY = position.y
       },
+      calculateHeight(){
+        setTimeout(() => {
+          this.diff = this.$refs.fliter.clientHeight - TOP_HEIGHT
+        },20)
+     },
+     scrollCancel() {
+       this.$refs.list.scrollCancel()
+     }
     },
   watch: {
       scrollY(newY) {
-        console.log(newY)
+        const diffHeight = -this.diff
+        if(newY<0 && newY>diffHeight){
+           this.$refs.layer.style.transform = `translate3d(0,${newY}px,0)`
+           this.scrollCancel()
+        }
+        else return
       }
   }
 }
@@ -83,6 +102,11 @@ export default {
 .wrapper,{
      overflow: hidden;
      height: 90vh;
+}
+.layer{
+  position: relative;
+  height: 100%;
+  background: @bgcolor;
 }
 .detail-playlist{
   .position(@position:fixed;@top:0;@left:0;@z-index:100);
