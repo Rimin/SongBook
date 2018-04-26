@@ -23,6 +23,12 @@ const SingerDetail = (resolve) => {
   })
 }
 
+const Rank = (resolve) => {
+  import('components/rank/rank').then((module) => {
+    resolve(module)
+  })
+}
+
 export default new Router({
   routes: [
     {
@@ -42,6 +48,10 @@ export default new Router({
           component: SingerDetail
         }
       ]
+    },
+    {
+      path: '/rank',
+      component: Rank
     }
   ]
 })
