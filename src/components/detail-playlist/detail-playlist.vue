@@ -10,7 +10,8 @@
              :data="data.list"
              :listen-scroll="listenScroll"
              :probe-type="probeType" 
-             ref="list">
+             ref="list" 
+             class="list">
             <div class="contain">
               <div class="singer-song" v-for="item in data.list">
                   <h3>{{item.name}}</h3>
@@ -19,7 +20,7 @@
               </div>
             </div>
      </scroll>
-     </div>
+    </div>
      <div class="loading-wrapper" v-show="!data">
         <loading></loading>
      </div>
@@ -31,7 +32,7 @@
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 
-const TOP_HEIGHT = 40
+const TOP_HEIGHT = 38
 export default {
   components:{
         Scroll,
@@ -53,37 +54,32 @@ export default {
   created() {
     this.probeType = 3
     this.listenScroll = true
-    this.calculateHeight()
   },
   computed: {
     bgimg() {
       return `background-image:url(${this.data.imgurl})`
       }
     },
+  mounted() {
+     this.diff = this.$refs.fliter.clientHeight - TOP_HEIGHT
+  },
   methods: {
       back() {
         this.$router.push({path:  '/singer'})
       },
       scroll(position) {
         this.scrollY = position.y
-      },
-      calculateHeight(){
-        setTimeout(() => {
-          this.diff = this.$refs.fliter.clientHeight - TOP_HEIGHT
-        },20)
-     },
-     scrollCancel() {
-       this.$refs.list.scrollCancel()
-     }
+      }
     },
   watch: {
       scrollY(newY) {
         const diffHeight = -this.diff
         if(newY<0 && newY>diffHeight){
            this.$refs.layer.style.transform = `translate3d(0,${newY}px,0)`
-           this.scrollCancel()
         }
-        else return
+        else {
+          return
+          }
       }
   }
 }
@@ -99,14 +95,15 @@ export default {
     left: @left;
     z-index: @z-index;
 }
-.wrapper,{
-     overflow: hidden;
-     height: 90vh;
-}
 .layer{
   position: relative;
+  z-index: 0;
   height: 100%;
-  background: @bgcolor;
+}
+.list{
+   background: @bgcolor;
+   height: 90vh;
+   overflow:hidden;
 }
 .detail-playlist{
   .position(@position:fixed;@top:0;@left:0;@z-index:100);
@@ -117,7 +114,7 @@ export default {
   background: @bgcolor;
 }
 .singer-name{
-  .position(@position:absolute;@top:0;@left:0;@z-index:999);
+  .position(@position:absolute;@top:0;@left:0;@z-index:9999);
   width: 100%;
   height: 40px;
   background: @fliter;
