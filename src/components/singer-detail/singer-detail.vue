@@ -29,7 +29,7 @@ export default {
         if(res.code===ERR_OK){
           this.songlist = this.normalizedata(res.data)
          }
-       // console.log(this.songlist)
+        console.log(res)
       })
     },
     normalizedata (data) {
@@ -41,7 +41,7 @@ export default {
       song.imgurl = this.getSinger.imgurl
       song.singer_name  = data.singer_name
       data.list.forEach((item, index) => {
-        song.list.push(new Song(item.musicData.albumname,item.musicData.albummid, data.singer_name, item.musicData.albumdesc))
+        song.list.push(new Song(item.musicData.songname,item.musicData.songmid, data.singer_name, item.musicData.albumname))
       });
       return song
     }

@@ -1,6 +1,10 @@
 <template>
   <div class="detail-playlist" ref="page">
-     <div class="singer-name"><span class="fa fa-chevron-left back" @click="back"></span>{{data.singer_name}}</div>
+     <div class="singer-name">
+        <span class="fa fa-chevron-left back" @click="back"></span>
+        <span v-if="!rank">{{data.singer_name}}</span>
+        <span v-if="rank">{{data.rank_name}}</span>
+     </div>
      <div class="singer-avatar" :style="bgimg">
         <div class="fliter" ref="fliter"></div>
         <div class="play"><span class="fa fa-play-circle-o"></span> 播放全部</div>
@@ -13,10 +17,13 @@
              ref="list" 
              class="list">
             <div class="contain">
-              <div class="singer-song" v-for="item in data.list">
-                  <h3>{{item.name}}</h3>
-                  <span>{{item.singer}}</span>
-                  <span>{{item.album}}</span>
+              <div class="singer-song" v-for="(item,index) in data.list">
+                  <div v-show="rank" class="ranking" :class="{'top3':index<3}">{{index+1}}</div>
+                  <div class="song">
+                    <h3>{{item.name}}</h3>
+                    <span>{{item.singer}}</span>
+                    <span v-if="!rank">{{item.album}}</span>
+                  </div>
               </div>
             </div>
      </scroll>
@@ -42,6 +49,10 @@ export default {
       data: { 
         type: Object,
         default: {}
+      },
+      rank:{
+        type: Boolean,
+        default:false
       }
     },
   data (){
@@ -65,7 +76,8 @@ export default {
   },
   methods: {
       back() {
-        this.$router.push({path:  '/singer'})
+         if(!this.rank) this.$router.push({path:  '/singer'})
+         else this.$router.push({path:  '/rank'})
       },
       scroll(position) {
         this.scrollY = position.y
@@ -141,14 +153,18 @@ export default {
 }
 .singer-song{
   padding: 10px 16px;
+  .flex(@direction :row);
   .textcut();
 }
-.singer-song>h3{
+.song{
+  display: inline-block;
+}
+.song>h3{
   .textcut();
   .font(@color: @fontcolor;@lineheight: 30px;@fontsize: 1rem);
   font-weight: normal;
 }
-.singer-song>span{
+.song>span{
   .font(@color: @lingtfontcolor;@lineheight: 20px;@fontsize: .8rem);
   padding-right: 6px;
 }
@@ -165,6 +181,14 @@ export default {
 .play>span{
   font-size: 1.0rem;
   padding-right: 4px;
+}
+.ranking{
+  padding: 3px 10px 0 0;
+  display: inline-block;
+  .font(@color: @fontcolor;@lineheight: normal;@fontsize: 1.1rem);
+}
+.top3{
+  color:@maincolor;
 }
 
 </style>

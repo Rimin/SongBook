@@ -1,6 +1,6 @@
 <template>
 <transition name="slide">
-  <div class="ranksonglist"></div>
+    <detail-playlist :data="ranksonglist" :rank=true></detail-playlist>
 </transition>
 </template>
 
@@ -8,6 +8,7 @@
 import DetailPlaylist from 'components/detail-playlist/detail-playlist'
 import {getRankSongList} from 'api/rank'
 import { mapGetters } from 'vuex'
+import {Song} from 'common/js/singer.js'
 import {ERR_OK} from 'api/config'
 
 export default {
@@ -25,10 +26,24 @@ export default {
   methods:{
       _getRankSongList() {
         getRankSongList(this.getRank.id).then((res) => {
-          //  if(res.code===ERR_OK){
-              console.log(res)
-          //   }
+         if(res.code===ERR_OK){
+             this.ranksonglist = this.normalizedata(res)
+            }
         })
+      },
+      normalizedata (data) {
+        let rank = {
+          list:[],
+          rank_name:'',
+          imgurl:''
+        }
+        rank.rank_name = data.topinfo.ListName
+        rank.imgurl = data.topinfo.pic_v12
+        data.songlist.forEach((item, index) => {
+            if(index>30) return false
+            rank.list.push(new Song(item.data.songname, item.data.songmid, item.data.singer[0].name, item.data.albumname))
+        });
+        return rank
       }
   },
   data(){
@@ -40,7 +55,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import url('../../common/less/base.less');
 .slide-enter-active, .slide-leave-active {
   transition: all .4s;
 }
@@ -51,15 +65,6 @@ export default {
   -o-transform: translate(100%,0);	
   -moz-transform: translate(100%,0);	
 }
-.ranksonglist{
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: @bgcolor;
-}
+
 </style>
 
