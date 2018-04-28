@@ -29,6 +29,12 @@ const Rank = (resolve) => {
   })
 }
 
+const RankSongList = (resolve) => {
+  import('components/ranksonglist/ranksonglist').then((module) => {
+    resolve(module)
+  })
+}
+
 export default new Router({
   routes: [
     {
@@ -51,7 +57,13 @@ export default new Router({
     },
     {
       path: '/rank',
-      component: Rank
+      component: Rank,
+      children: [
+        {
+          path: ':id',
+          component: RankSongList
+        }
+      ]
     }
   ]
 })

@@ -26,8 +26,10 @@ export default {
   methods:{
     _getSonglist(){
       getSingerSongList(this.getSinger.id).then((res) =>{
-        this.songlist = this.normalizedata(res.data)
-        console.log(this.songlist)
+        if(res.code===ERR_OK){
+          this.songlist = this.normalizedata(res.data)
+         }
+       // console.log(this.songlist)
       })
     },
     normalizedata (data) {

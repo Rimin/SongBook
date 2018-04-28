@@ -6,7 +6,7 @@
                <div class="rank-item">
                    <img v-lazy='item.picUrl'>
                    <div class="rank-preview" >
-                       <span v-for="song in item.songList">{{song.songname}}-{{song.singername}}</span>
+                       <span v-for="(song, index) in item.songList">{{index+1}}.{{song.songname}}-{{song.singername}}</span>
                    </div>
                </div>
            </div>
@@ -15,6 +15,7 @@
     <div class="loading-wrapper" v-show="!rank.length">
         <loading></loading>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -23,6 +24,8 @@ import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import {ERR_OK} from 'api/config'
 import {getRankList} from 'api/rank'
+import { mapMutations } from 'vuex'
+
 export default {
   components:{
       Scroll,
@@ -37,6 +40,9 @@ export default {
       }
   },
   methods: {
+       ...mapMutations({
+            storeRank: 'STORE_RANK'
+        }),
       _getRankList() {
         getRankList().then((res) => {
             if(res.code === ERR_OK){
@@ -45,8 +51,9 @@ export default {
             }
         })
       },
-      selectRank(data){
-
+      selectRank(item){
+          this.$router.push({path: `/rank/${item.id}`})
+          this.storeRank(item)
       }
   }
 }
@@ -75,7 +82,7 @@ export default {
     height: 100px;
     overflow: hidden;
     .font(@color: @lingtfontcolor;@lineheight: normal;@fontsize: .9rem);
-   
+    background: #ffffff;
 }
 .rank-preview > span{
      .textcut()
