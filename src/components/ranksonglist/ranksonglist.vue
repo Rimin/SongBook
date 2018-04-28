@@ -40,7 +40,7 @@ export default {
         rank.rank_name = data.topinfo.ListName
         rank.imgurl = data.topinfo.pic_v12
         data.songlist.forEach((item, index) => {
-            if(index>30) return false
+            if(index>29) return false
             rank.list.push(new Song(item.data.songname, item.data.songmid, item.data.singer[0].name, item.data.albumname))
         });
         return rank
