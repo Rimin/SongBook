@@ -18,7 +18,7 @@ export function getSearchResult (query, pagenum) {
   const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
   const data = Object.assign(commonParams, {
     uin: 0,
-    format: 'json',
+    format: 'jsonp',
     platform: 'h5',
     needNewCode: 1,
     t: 0,
@@ -31,8 +31,8 @@ export function getSearchResult (query, pagenum) {
     catZhida: 1,
     w: query,
     perpage: 20,
-    n: pagenum,
-    p: 20
+    n: 20,
+    p: pagenum
   })
   return jsonp(url, data, options)
 }

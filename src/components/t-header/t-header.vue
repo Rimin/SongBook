@@ -1,5 +1,5 @@
 <template>
-    <div class="head">
+    <div class="head" ref="head">
         <i class="logo">SongBook</i>
         <router-link to="/user">
             <i class="user fa fa-user"></i>

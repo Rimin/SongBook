@@ -1,6 +1,6 @@
 <template>
   <div class="search">
-      <div class="search-box">
+      <div class="search-box" ref="search_box">
           <i class="fa fa-search"></i>
           <input placeholder="搜索歌曲、歌手" v-model="search_value">
           <i class="empty fa fa-close" v-show="search_value" @click="empty"></i>
@@ -10,13 +10,13 @@
          <span v-for="item in hotkey" @click="hotsearch(item.k)">{{item.k}}</span>
       </div>
       <div class="search-history"></div>
-      <search-list></search-list>
+      <search-list :query="search_value" v-show="search_value!=''"></search-list>
   </div>
 </template>
 
 <script>
 import SearchList from 'base/search-list/search-list'
-import {getHotKey, getSearchResult} from 'api/search'
+import {getHotKey} from 'api/search'
 import {ERR_OK} from 'api/config'
 export default {
   components:{
@@ -54,7 +54,7 @@ export default {
 @import url('../../common/less/base.less');
 .search-box{
     .flex(@direction:row);
-    margin: 10px 30px;
+    margin: 10px @searchmargin;
     justify-content: center;
     align-items: center;
     background: #ffffff;
@@ -74,10 +74,11 @@ export default {
    padding: 0 8px;
 }
 .search-hot{
-    margin: 20px 30px;
+    margin: 20px @searchmargin;
 }
 .search-hot>h3{
-    .font(@color: @lingtfontcolor;@lineheight: normal;@fontsize: 1rem);
+    .font(@color: @fontcolor;@lineheight: normal;@fontsize: 1rem);
+    font-weight: normal;
      padding-bottom: 16px;
 }
 .search-hot>span{

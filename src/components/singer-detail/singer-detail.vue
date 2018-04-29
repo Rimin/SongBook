@@ -29,7 +29,6 @@ export default {
         if(res.code===ERR_OK){
           this.songlist = this.normalizedata(res.data)
          }
-        console.log(res)
       })
     },
     normalizedata (data) {

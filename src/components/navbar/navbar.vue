@@ -1,5 +1,5 @@
 <template>
-    <nav>
+    <nav ref="nav">
         <router-link to="/recomend">推荐</router-link>
         <router-link to="/singer">歌手</router-link>
         <router-link to="/rank">排行榜</router-link>

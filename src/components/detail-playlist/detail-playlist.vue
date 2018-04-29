@@ -76,8 +76,7 @@ export default {
   },
   methods: {
       back() {
-         if(!this.rank) this.$router.push({path:  '/singer'})
-         else this.$router.push({path:  '/rank'})
+        this.$router.go(-1)
       },
       scroll(position) {
         this.scrollY = position.y

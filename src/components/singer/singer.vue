@@ -10,7 +10,7 @@ import Loading from 'base/loading/loading'
 import Singerlist from 'base/list/list'
 import {ERR_OK} from 'api/config'
 import {getSinger} from 'api/singer'
-import Singer from 'common/js/singer.js'
+import {Singer} from 'common/js/singer.js'
 import { mapMutations } from 'vuex'
 
 const HOT_SINGER = 10
