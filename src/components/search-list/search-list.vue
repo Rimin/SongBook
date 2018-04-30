@@ -1,16 +1,17 @@
 <template>
  <div class="search-list" ref="search_list">
-    <scroll  @scroll="scroll"
+    <scroll  @scrollToEnd="scrollToEnd"
             :listen-scroll="listenScroll"
             :probe-type="probeType" 
-            ref="list" 
+            :pullup="pullup"
+            ref="wrapper" 
             class="list"
             @data="result"> 
-        <div class="contain result-list">
+        <div class="contain result-list" ref="result_list">
             <div class="result-item" v-for="item in result">
                 <i :class="[{'fa fa-user-o': !item.singer}, {'fa fa-music': item.singer}]"></i>
-                <span v-if="item.singer">{{item.name}}-{{item.singer}}</span>
-                <span v-if="!item.singer">{{item.name}}</span>
+                <span v-if="item.singer" @click="selectSong(item)">{{item.name}}-{{item.singer}}</span>
+                <span v-if="!item.singer" @click="selectSinger(item)">{{item.name}}</span>
             </div>
             <loading v-show="!noresult&&currentpage<totalpage"></loading>
         </div>
@@ -25,6 +26,7 @@ import Loading from 'base/loading/loading'
 import {getSearchResult} from 'api/search'
 import {ERR_OK} from 'api/config'
 import {Singer, Song} from 'common/js/singer.js'
+import { mapMutations } from 'vuex'
 const QUERY_ERR = 'query error'
 
 export default {
@@ -36,10 +38,7 @@ export default {
         return{
             currentpage: 1,
             totalpage: 0,
-          //  finishload: false,
-            fistload: true,
             noresult: false,
-            scrollY: -1,
             result: []
         }
     },
@@ -52,10 +51,18 @@ export default {
     created() {
         this.probeType = 3
         this.listenScroll = true
+        this.pullup = true
     },
     methods: {
-        scroll(position) {
-            this.scrollY = position.y
+         ...mapMutations({
+            storeSinger: 'STORE_SINGER'
+        }),
+        scrollToEnd() {
+            if(this.currentpage < this.totalpage){
+                this.currentpage += 1 
+                this._getSearchResult()
+            }
+            else return
         },
         _getSearchResult(){
             getSearchResult(this.query, this.currentpage).then((res) => {
@@ -72,7 +79,7 @@ export default {
         },
         normalizedata(data){
             let res = []
-            if(data.zhida.type === 2 && this.fistload === true){
+            if(data.zhida.type === 2 && this.currentpage === 1){
                 res.push(new Singer(data.zhida.singername, data.zhida.singermid))
             }
             if(data.song.list.length!=0){
@@ -88,19 +95,27 @@ export default {
                    res.push(new Song(item.songname, item.songmid, singer, item.albumname))
                });
             }
-            if(this.fistload === true) {
+            if(this.currentpage === 1) {
                 this.totalpage = data.song.totalnum > 20 ? Math.ceil(data.song.totalnum / 20) : 1
-                this.finishload = false
                 this.result = res
             }
-            else this.result.push(res)
+            else if(this.currentpage > 1){
+               this.result = this.result.concat(res)
+            }
+        },
+        selectSinger(item) {
+            this.$router.push({ path: `/singer/${item.id}`})
+            this.storeSinger(item)
+            this.$emit('setHistory', item.name)
+        },
+        selectSong(item) {
+            this.$emit('setHistory', item.name)
         }
     },
     watch:{
        query(newQuery) {
            if(newQuery!=''){
                this.currentpage = 1
-               this.fistload = true
                this._getSearchResult()
             }
             else{
@@ -109,9 +124,6 @@ export default {
                 return
             }
        },
-       scrollY(newY){
-         //  console.log(this.$refs.search_list.clientHeight+'&&'+newY)
-       }
 
     },
 }
@@ -119,6 +131,9 @@ export default {
 
 <style lang="less" scoped>
 @import url('../../common/less/base.less');
+.list{
+    height: 78vh !important;
+}
 .search-list{
     position: fixed;
     width: 100%;

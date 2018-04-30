@@ -9,15 +9,19 @@
          <h3>热门搜索</h3>
          <span v-for="item in hotkey" @click="hotsearch(item.k)">{{item.k}}</span>
       </div>
-      <div class="search-history"></div>
-      <search-list :query="search_value" v-show="search_value!=''"></search-list>
+      <div class="search-history" v-show="history.length!=0">
+          <h3>搜索历史<i class="fa fa-trash-o" @click="deletHistory()"></i></h3>
+          <p v-for="item in history">{{item}}<i class="fa fa-close" @click="deletHistory(item)"></i></p>
+      </div>
+      <search-list :query="search_value" v-show="search_value!=''" @setHistory="setHistory"></search-list>
   </div>
 </template>
 
 <script>
-import SearchList from 'base/search-list/search-list'
+import SearchList from 'components/search-list/search-list'
 import {getHotKey} from 'api/search'
 import {ERR_OK} from 'api/config'
+const SEARCH_HISTORY = 'SEARCH_HISTORY'
 export default {
   components:{
     SearchList
@@ -25,26 +29,58 @@ export default {
   data() {
       return {
           search_value: '',
-          hotkey: []
+          hotkey: [],
+          history: []
       }
   },
   created() {
       this._getHotKey()
+      this.getHistory()
   },
   methods: {
-      empty (){
-          this.search_value = ''
-      },
-      _getHotKey() {
-          getHotKey().then((res) => {
-              if(res.code === ERR_OK) {
-                 this.hotkey = res.data.hotkey.slice(0, 12)
-              }
-          })
-      },
-      hotsearch(key) {
-          this.search_value = key
-      }
+    empty (){
+        this.search_value = ''
+    },
+    _getHotKey() {
+        getHotKey().then((res) => {
+            if(res.code === ERR_OK) {
+                this.hotkey = res.data.hotkey.slice(0, 12)
+            }
+        })
+    },
+    hotsearch(key) {
+        this.search_value = key
+    },
+    setHistory(name) {
+        let flag = true
+        this.history.forEach(function(el){
+            if(el===name)  { 
+                flag = false
+                return false
+            } 
+        });
+        flag && this.history.push(name) && localStorage.setItem(SEARCH_HISTORY, JSON.stringify(this.history))
+    },
+    getHistory() {
+        let history =  JSON.parse(localStorage.getItem(SEARCH_HISTORY))
+        this.history = history ? history : []  
+    },
+    deletHistory(item){
+        if(item){
+            this.history.forEach((el,i) => { // 箭头函数的this指向
+                if(el === item){
+                    this.history.splice(i, 1)
+                    console.log(this.history)
+                    localStorage.setItem(SEARCH_HISTORY, JSON.stringify(this.history))
+                    return
+                }
+            })
+        }
+        else{
+              this.history = [] 
+              localStorage.removeItem(SEARCH_HISTORY); 
+            }
+    }
   }
 
 }
@@ -52,6 +88,7 @@ export default {
 
 <style lang="less" scoped>
 @import url('../../common/less/base.less');
+@iconcolor: rgba(0,0,0,.3);
 .search-box{
     .flex(@direction:row);
     margin: 10px @searchmargin;
@@ -70,13 +107,13 @@ export default {
     font-size: 14px;
 }
 .search-box > i{
-   color: #7a7a7a99;
+   color: @iconcolor;
    padding: 0 8px;
 }
-.search-hot{
+.search-hot, .search-history{
     margin: 20px @searchmargin;
 }
-.search-hot>h3{
+.search-hot>h3, .search-history>h3{
     .font(@color: @fontcolor;@lineheight: normal;@fontsize: 1rem);
     font-weight: normal;
      padding-bottom: 16px;
@@ -88,5 +125,16 @@ export default {
     border-radius: 99px;
     background: #ffffff;
     .font(@color: @lingtfontcolor;@lineheight: normal;@fontsize: .9rem);
+}
+.search-history h3 > i{
+    float: right;
+}
+.search-history > p{
+    .font(@color: @lingtfontcolor;@lineheight: normal;@fontsize: .9rem);
+    padding-bottom: 2px;
+}
+.search-history p > i{
+    .font(@color: @iconcolor;@lineheight: normal;@fontsize: .9rem);
+    float: right ;
 }
 </style>

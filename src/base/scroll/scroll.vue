@@ -40,7 +40,7 @@ export default {
         beforeScroll: {
             type: Boolean,
             default: false
-        },
+        }
    },
    methods: {
        _initScroll() {
@@ -51,7 +51,10 @@ export default {
                // bounce: this.bounce,
                 click: this.click,
                 probeType: this.probeType,
-                mouseWheel: false
+                mouseWheel: false,
+                pullUpLoad: {
+                    threshold: -20 // 在上拉到超过底部 20px 时，触发 pullingUp 事件
+                },
             })
             if (this.listenScroll) {
                 let me = this
@@ -66,6 +69,10 @@ export default {
                     this.$emit('scrollToEnd')
                 }
                 })
+            //  this.scroll.on('pullingUp', () => {
+            //     this.$emit('pullUpLoadMore')
+            //  })   // 此方法只能触发一次
+             
             }
 
             if (this.beforeScroll) {

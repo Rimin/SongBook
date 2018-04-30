@@ -76,7 +76,7 @@ export default {
   },
   methods: {
       back() {
-        this.$router.go(-1)
+        this.$router.back()
       },
       scroll(position) {
         this.scrollY = position.y
