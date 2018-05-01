@@ -1,6 +1,9 @@
 const state = {
   singer: {},
-  rank: {}
+  rank: {},
+  playlist: [],
+  song: {},
+  showPlayer: false
 }
 
 export default state

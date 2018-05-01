@@ -5,17 +5,19 @@
     <keep-alive>
     <router-view></router-view>
     </keep-alive>
+    <player></player>
   </div>
 </template>
 
 <script>
 import THeader from 'components/t-header/t-header'
 import Navbar from  'components/navbar/navbar'
-
+import Player from 'components/player/player'
 export default {
   components:{
     THeader,
-    Navbar
+    Navbar,
+    Player
   }
 }
 </script>

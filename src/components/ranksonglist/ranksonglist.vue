@@ -8,7 +8,7 @@
 import DetailPlaylist from 'components/detail-playlist/detail-playlist'
 import {getRankSongList} from 'api/rank'
 import { mapGetters } from 'vuex'
-import {Song} from 'common/js/singer.js'
+import {Song, getSingerName} from 'common/js/song.js'
 import {ERR_OK} from 'api/config'
 
 export default {
@@ -41,7 +41,7 @@ export default {
         rank.imgurl = data.topinfo.pic_v12
         data.songlist.forEach((item, index) => {
             if(index>29) return false
-            rank.list.push(new Song(item.data.songname, item.data.songmid, item.data.singer[0].name, item.data.albumname))
+            rank.list.push(new Song(item.data.songname, item.data.songmid, getSingerName(item.data.singer), item.data.albumname, item.data.albummid, item.data.interval))
         });
         return rank
       }

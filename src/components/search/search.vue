@@ -7,11 +7,16 @@
       </div>
       <div class="search-hot" >
          <h3>热门搜索</h3>
-         <span v-for="item in hotkey" @click="hotsearch(item.k)">{{item.k}}</span>
+         <span v-for="item in hotkey" @click="getSearch(item.k)">{{item.k}}</span>
       </div>
       <div class="search-history" v-show="history.length!=0">
-          <h3>搜索历史<i class="fa fa-trash-o" @click="deletHistory()"></i></h3>
-          <p v-for="item in history">{{item}}<i class="fa fa-close" @click="deletHistory(item)"></i></p>
+            <h3>搜索历史<i class="fa fa-trash-o" @click="deletHistory()"></i></h3>
+            <transition-group name="slideout" tag="p">
+                <p v-for="item in history" :key="item" class="slideout-item">
+                    <span @click="getSearch(item)">{{item}}</span>
+                    <i class="fa fa-close" @click="deletHistory(item)"></i>
+                </p>
+            </transition-group>
       </div>
       <search-list :query="search_value" v-show="search_value!=''" @setHistory="setHistory"></search-list>
   </div>
@@ -22,6 +27,7 @@ import SearchList from 'components/search-list/search-list'
 import {getHotKey} from 'api/search'
 import {ERR_OK} from 'api/config'
 const SEARCH_HISTORY = 'SEARCH_HISTORY'
+const Max_HISTORY = 8
 export default {
   components:{
     SearchList
@@ -48,7 +54,7 @@ export default {
             }
         })
     },
-    hotsearch(key) {
+    getSearch(key) {
         this.search_value = key
     },
     setHistory(name) {
@@ -59,7 +65,12 @@ export default {
                 return false
             } 
         });
-        flag && this.history.push(name) && localStorage.setItem(SEARCH_HISTORY, JSON.stringify(this.history))
+        if(flag && this.history.length === Max_HISTORY){
+            this.history.splice(0, 1)
+            this.history.push(name)
+            localStorage.setItem(SEARCH_HISTORY, JSON.stringify(this.history))
+        }
+        else if(flag && this.history.length < Max_HISTORY)  this.history.push(name) && localStorage.setItem(SEARCH_HISTORY, JSON.stringify(this.history))
     },
     getHistory() {
         let history =  JSON.parse(localStorage.getItem(SEARCH_HISTORY))
@@ -70,7 +81,6 @@ export default {
             this.history.forEach((el,i) => { // 箭头函数的this指向
                 if(el === item){
                     this.history.splice(i, 1)
-                    console.log(this.history)
                     localStorage.setItem(SEARCH_HISTORY, JSON.stringify(this.history))
                     return
                 }
@@ -129,12 +139,23 @@ export default {
 .search-history h3 > i{
     float: right;
 }
-.search-history > p{
+.search-history  p{
     .font(@color: @lingtfontcolor;@lineheight: normal;@fontsize: .9rem);
-    padding-bottom: 2px;
+    padding-bottom: 10px;
 }
 .search-history p > i{
     .font(@color: @iconcolor;@lineheight: normal;@fontsize: .9rem);
     float: right ;
 }
+.slideout-leave-active{
+    position: absolute;   // 这个不是很人性化
+}
+.slideout-leave-to{
+    transform: translateY(-10px);
+    opacity: 0;
+ }
+ .slideout-item{
+    transition: all .3s ease;
+ }
+ 
 </style>

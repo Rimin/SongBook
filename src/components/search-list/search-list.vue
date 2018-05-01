@@ -25,7 +25,8 @@ import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import {getSearchResult} from 'api/search'
 import {ERR_OK} from 'api/config'
-import {Singer, Song} from 'common/js/singer.js'
+import {Singer} from 'common/js/singer.js'
+import {Song, getSingerName} from 'common/js/song.js'
 import { mapMutations } from 'vuex'
 const QUERY_ERR = 'query error'
 
@@ -83,16 +84,8 @@ export default {
                 res.push(new Singer(data.zhida.singername, data.zhida.singermid))
             }
             if(data.song.list.length!=0){
-                let singer = ''
                data.song.list.forEach((item, index) => {
-                   if(item.singer.length>1) {
-                       singer = ''
-                       item.singer.forEach((el,n) => {
-                           singer += n>0 ? `/${el.name}` : el.name 
-                       })
-                   }
-                   else if(item.singer.length==1) singer = item.singer[0].name
-                   res.push(new Song(item.songname, item.songmid, singer, item.albumname))
+                   res.push(new Song(item.songname, item.songmid, getSingerName(item.singer), item.albumname, item.albummid, item.interval))
                });
             }
             if(this.currentpage === 1) {

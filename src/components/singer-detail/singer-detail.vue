@@ -8,7 +8,7 @@
 import DetailPlaylist from 'components/detail-playlist/detail-playlist'
 import {getSingerSongList} from 'api/singer'
 import { mapGetters } from 'vuex'
-import {Song} from 'common/js/singer.js'
+import {Song, getSingerName} from 'common/js/song.js'
 import {ERR_OK} from 'api/config'
 
 export default {
@@ -40,7 +40,7 @@ export default {
       song.imgurl = this.getSinger.imgurl
       song.singer_name  = data.singer_name
       data.list.forEach((item, index) => {
-        song.list.push(new Song(item.musicData.songname,item.musicData.songmid, data.singer_name, item.musicData.albumname))
+        song.list.push(new Song(item.musicData.songname,item.musicData.songmid, getSingerName(item.musicData.singer), item.musicData.albumname, item.musicData.albummid, item.musicData.interval))
       });
       return song
     }
@@ -49,7 +49,11 @@ export default {
     return{
        songlist: {}
     }
-  }
+  },
+  watch: {
+    // 如果路由有变化，会再次执行该方法
+    '$route': '_getSonglist'
+  },
 }
 </script>
 
