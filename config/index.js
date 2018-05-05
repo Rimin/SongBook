@@ -6,7 +6,6 @@ const path = require('path')
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
@@ -43,10 +42,12 @@ module.exports = {
     cssSourceMap: true
   },
 
-  build: {
+  build: {  
+    // env: require('./prod.env'),
+    port: 9000,
     // Template for index.html
     index: path.resolve(__dirname, '../dist/index.html'),
-
+  
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
@@ -56,7 +57,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: false,  // false使源码不暴露
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 

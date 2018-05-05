@@ -1,10 +1,10 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 // vue-cli项目使用的一个主js文件,这是在webpack配置的时候定义的,是主js入口
+import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import 'babel-polyfill'
 import fastclick from 'fastclick'
 import store from './store/store'
 
@@ -14,7 +14,7 @@ import VueLazyload from 'vue-lazyload'
 
 fastclick.attach(document.body)
 Vue.use(VueLazyload, {
-  loading: 'static/lazyload.png'
+  loading: require('./assets/imgs/lazyload.png')
 })
 Vue.config.productionTip = false
 

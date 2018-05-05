@@ -17,7 +17,7 @@
              ref="list" 
              class="list">
             <div class="contain">
-              <div class="singer-song" v-for="(item,index) in data.list">
+              <div class="singer-song" v-for="(item,index) in data.list" :key="index" @click="playSong(item, index)">
                   <div v-show="rank" class="ranking" :class="{'top3':index<3}">{{index+1}}</div>
                   <div class="song">
                     <h3>{{item.name}}</h3>
@@ -38,7 +38,7 @@
 <script>
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
-
+import { mapActions } from 'vuex'
 const TOP_HEIGHT = 38
 export default {
   components:{
@@ -75,11 +75,20 @@ export default {
      this.diff = this.$refs.fliter.clientHeight - TOP_HEIGHT
   },
   methods: {
+     ...mapActions([
+        'selectPlay'
+      ]),
       back() {
         this.$router.back()
       },
       scroll(position) {
         this.scrollY = position.y
+      },
+      playSong(item, index){
+        this.selectPlay({
+          list: this.data.list,
+          index: index
+        })
       }
     },
   watch: {

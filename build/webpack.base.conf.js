@@ -44,7 +44,7 @@ module.exports = {
   },
   module: {
     rules: [
-      ...(config.dev.useEslint ? [createLintingRule()] : []),
+     // ...(config.dev.useEslint ? [createLintingRule()] : []),  // 关闭eslint
       {
         test: /\.vue$/,
         loader: 'vue-loader',
@@ -53,13 +53,23 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')],
+        query: {
+          plugins: [
+            "transform-runtime"
+          ],
+          presets: ['es2015', 'stage-0']
+        }
+        // options: {
+        //   presets: ['env'],
+        //   plugins: ['transform-runtime']
+        // }
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
         options: {
-          limit: 10000,
+          limit: 10000, // 90000
           name: utils.assetsPath('img/[name].[hash:7].[ext]')
         }
       },
@@ -75,7 +85,7 @@ module.exports = {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url-loader',
         options: {
-          limit: 10000,
+          limit: 10000,  // 90000
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       },

@@ -16,7 +16,7 @@ export default {
 @import url('../../common/less/base.less');
 @navheight: 40px;
 nav{
-    display: -webkit-flex; /* Safari */
+   // display: -webkit-flex; /* Safari */
     display: flex;
     flex-direction:row;
     background: #fff;
