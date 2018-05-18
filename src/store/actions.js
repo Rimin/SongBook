@@ -1,5 +1,5 @@
 import * as types from './mutation-types'
-import { type } from 'os'
+// import { type } from 'os'
 
 export const selectPlay = function ({commit, state}, {list, index}) {
   commit(types.SET_PLAYLIST, list)
