@@ -2,7 +2,30 @@
   <div class="player" v-show="playList.length>0">
       <div class="full-player" v-show="showPlayer">
         <div class="background">
-          <img style="width=100%; height=100%">
+          <img :src="currentSong.imgurl">
+        </div>
+        <div class="player-top">
+            <div class="back" @click="back()">
+              <i class="fa fa-chevron-down"></i>
+            </div>
+            <p>{{currentSong.name}}</p>
+            <span>{{currentSong.singer}}</span>
+        </div>
+        <div class="player-middle">
+            <div class="middle-l">
+              <div class="cd-wrapper">
+                <div class="cd rotate" :class="{'pause':!isPlaying}">
+                  <img :src="currentSong.imgurl">
+                </div>
+              </div>
+              <div class="curret-lyric">
+                也代表我已走远
+              </div>
+            </div>
+            <div class="middle-r"></div>
+        </div>
+        <div class="player-bottom">
+
         </div>
       </div>
       <div class="mini-player" v-show="!showPlayer"></div>
@@ -19,9 +42,10 @@ export default {
     },
     computed: {
       ...mapGetters([
-         'playList',
          'showPlayer',
-         'getCurrSongindex'
+         'playList',
+         'currentSong',
+         'isPlaying'
       ])
     },
     data() {
@@ -40,6 +64,9 @@ export default {
       ...mapMutations([
 
       ]),
+      back(){
+
+      },
       _getSong () {
         this.song =  this.getPlayList[this.getCurrSongindex]
       //  console.log(this.song)
@@ -65,7 +92,7 @@ export default {
   top: 0;
   bottom: 0;
   z-index: 200;
-  background: @bgcolor;
+  background: #222222;
 }
 .background{
   position: absolute;
@@ -73,10 +100,90 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 100;
+  z-index: -1;
   opacity: 0.6;
   -webkit-filter: blur(20px);
   filter: blur(20px);
 }
-
+.background > img{
+  width: 100%;
+  height: 100%;
+}
+.back{
+  position: absolute;
+  top: 0;
+  left: 6px;
+  z-index: 50;
+}
+.back > i{
+    display: block;
+    padding: 9px;
+    font-size: 22px;
+    color: @maincolor;
+}
+.player-top{
+  text-align: center;
+  position: relative;
+  margin-bottom: 25px;
+}
+.player-top >p {
+  width: 70%;
+  margin:  0 auto;
+  .textcut();
+  .font(@color: #ffffff;@lineheight: 40px;@fontsize: 1.1rem);
+}
+.player-top > span{
+  .textcut();
+  .font(@color: #ffffff;@lineheight: normal;@fontsize: .9rem);
+}
+.player-middle{
+  position: fixed;
+  width: 100%;
+  top: 80px;
+  bottom: 170px;
+}
+.middle-l{
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-top: 80%;
+}
+.cd-wrapper{
+    position: absolute;
+    left: 10%;
+    top: 0;
+    width: 80%;
+    height: 100%;
+}
+.cd{
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 10px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+.cd > img{
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.rotate{
+  animation: rotate 20s linear infinite;
+}
+.pause{
+  animation-play-state:paused;
+}
+.curret-lyric{
+  width: 80%;
+  margin: 30px auto 0 auto;
+  overflow: hidden;
+  text-align: center;
+ .font(@color:rgba(255,255,255,0.5);@lineheight: 20px;@fontsize: 1rem);
+}
+ @keyframes rotate {
+   0%{transform: rotate(0);}
+   100%{transform: rotate(360deg);}
+ }
 </style>
