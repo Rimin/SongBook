@@ -37,7 +37,7 @@ export default {
         Loading,
     },
     props: {
-      data: {  // 传递给子组件
+      data: { 
         type: Array,
         default: []
       }

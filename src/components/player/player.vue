@@ -30,7 +30,7 @@
             <span class="dot"></span>
           </div>
           <div class="play-control">
-            <progress-bar></progress-bar>
+            <progress-bar :duration="formatt(currentSong.duration)"></progress-bar>
             <div class="operators">
               <div class="op-btn btn-left">
                 <i class="fa fa-retweet"></i>
@@ -51,7 +51,9 @@
           </div>
         </div>
       </div>
-      <div class="mini-player" v-show="!showPlayer"></div>
+      <div class="mini-player" v-show="!showPlayer">
+
+      </div>
   </div>
 </template>
 
@@ -82,19 +84,21 @@ export default {
     },
     methods:{
       ...mapActions({
-        
+
       }),
       ...mapMutations({
-         setPlaystate: 'SET_PLAYINGSTATE'
+         setPlaystate: 'SET_PLAYINGSTATE',
+         changeShow: 'CHANGE_SHOWPLAYER'
       }),
       back(){
-
+        this.changeShow(false)
       },
       stop(){
         this.isPlaying === true ? this.setPlaystate(false):this.setPlaystate(true)
       },
       formatt(num){
-        // 格式化时间
+        let time_arr = ((num/60).toFixed(2)).toString().split('.')
+        return time_arr[0] + ':' +time_arr[1]
       },
       _getSong () {
         this.song =  this.getPlayList[this.getCurrSongindex]
@@ -105,9 +109,6 @@ export default {
           console.log(res)
         }) 
       }
-    },
-    watch: {
-      
     }
 }
 </script>
@@ -251,4 +252,15 @@ export default {
 // fa fa-random  fa fa-retweet
 // fa fa-backward  fa fa-forward
 // fa fa-heart fa fa-heart-o
+.mini-player{
+  display: flex;
+  align-items: center;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 180;
+  width: 100%;
+  height: 60px;
+  background: #ffffff;
+}
 </style>

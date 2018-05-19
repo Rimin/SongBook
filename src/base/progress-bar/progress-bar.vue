@@ -9,7 +9,7 @@
                 </div>
             </div>
         </div>
-        <span></span>
+        <span class="time">{{duration}}</span>
     </div>
 </template>
 
