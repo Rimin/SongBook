@@ -25,7 +25,30 @@
             <div class="middle-r"></div>
         </div>
         <div class="player-bottom">
-
+          <div class="drag-dot">
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="play-control">
+            <progress-bar></progress-bar>
+            <div class="operators">
+              <div class="op-btn btn-left">
+                <i class="fa fa-retweet"></i>
+              </div>
+              <div class="op-btn btn-left">
+                <i class="fa fa-backward"></i>
+              </div>
+              <div class="op-btn btn-center" @click="stop">
+                <i class="fa" :class="[{'fa-pause': isPlaying},{'fa-play': !isPlaying}]" ></i>
+              </div>
+              <div class="op-btn btn-right">
+                <i class="fa fa-forward"></i>
+              </div>
+              <div class="op-btn btn-right">
+                <i class="fa fa-heart-o"></i>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="mini-player" v-show="!showPlayer"></div>
@@ -36,9 +59,11 @@
 import Scroll from 'base/scroll/scroll'
 import {getLyric} from 'api/song'
 import { mapGetters, mapMutations, mapActions  } from 'vuex'
+import ProgressBar from 'base/progress-bar/progress-bar'
 export default {
     components:{
-      Scroll
+      Scroll,
+      ProgressBar
     },
     computed: {
       ...mapGetters([
@@ -50,22 +75,26 @@ export default {
     },
     data() {
       return {
-        song: {},
-        lyric:'',
-        showplay: false
+        lyric:''
       }
     },
     created() {
     },
     methods:{
-      ...mapActions([
-
-      ]),
-      ...mapMutations([
-
-      ]),
+      ...mapActions({
+        
+      }),
+      ...mapMutations({
+         setPlaystate: 'SET_PLAYINGSTATE'
+      }),
       back(){
 
+      },
+      stop(){
+        this.isPlaying === true ? this.setPlaystate(false):this.setPlaystate(true)
+      },
+      formatt(num){
+        // 格式化时间
       },
       _getSong () {
         this.song =  this.getPlayList[this.getCurrSongindex]
@@ -186,4 +215,40 @@ export default {
    0%{transform: rotate(0);}
    100%{transform: rotate(360deg);}
  }
+ .drag-dot{
+   text-align: center;
+ }
+ .dot{
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+ }
+ .active{
+  width: 20px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.8);
+ }
+ .player-bottom{
+  position: absolute;
+  bottom: 50px;
+  width: 100%;
+ }
+.operators{
+  display: flex;
+  align-items: center;
+}
+.op-btn{
+  flex:1;
+  .font(@color: @maincolor; @lineheight: normal;@fontsize: 2.1rem);
+}
+.btn-left{text-align: right;}
+.btn-right{text-align: left;}
+.btn-center{text-align: center;}
+// fa fa-random  fa fa-retweet
+// fa fa-backward  fa fa-forward
+// fa fa-heart fa fa-heart-o
 </style>
