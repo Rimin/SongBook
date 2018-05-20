@@ -1,11 +1,17 @@
 <template>
   <div class="player" v-show="playList.length>0">
+    <transition name="full"
+           @enter="enter"
+           @after-enter="afterEnter"
+           @leave="leave"
+           @after-leave="afterLeave"
+    >
       <div class="full-player" v-show="showPlayer">
         <div class="background">
           <img :src="currentSong.imgurl">
         </div>
-        <div class="player-top">
-            <div class="back" @click="back()">
+        <div class="player-top top">
+            <div class="back" @click="_changeShow">
               <i class="fa fa-chevron-down"></i>
             </div>
             <p>{{currentSong.name}}</p>
@@ -13,7 +19,7 @@
         </div>
         <div class="player-middle">
             <div class="middle-l">
-              <div class="cd-wrapper">
+              <div class="cd-wrapper" ref="cdWrap" >
                 <div class="cd rotate" :class="{'pause':!isPlaying}">
                   <img :src="currentSong.imgurl">
                 </div>
@@ -24,7 +30,7 @@
             </div>
             <div class="middle-r"></div>
         </div>
-        <div class="player-bottom">
+        <div class="player-bottom bottom">
           <div class="drag-dot">
             <span class="dot"></span>
             <span class="dot"></span>
@@ -38,7 +44,7 @@
               <div class="op-btn btn-left">
                 <i class="fa fa-backward"></i>
               </div>
-              <div class="op-btn btn-center" @click="stop">
+              <div class="op-btn btn-center" @click="toggle">
                 <i class="fa" :class="[{'fa-pause': isPlaying},{'fa-play': !isPlaying}]" ></i>
               </div>
               <div class="op-btn btn-right">
@@ -50,9 +56,26 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="mini-player" v-show="!showPlayer">
-
+       </div>
+      </transition>
+      <div class="mini-player" v-show="!showPlayer" @click="_changeShow">
+        <div class="mini-cd">
+          <img :src="currentSong.imgurl" class="rotate" :class="{'pause':!isPlaying}">
+        </div>
+        <div class="song-infor">
+          <p>{{currentSong.name}}</p>
+          <span>{{currentSong.singer}}</span>
+        </div>
+        <div class="mini-operate">
+          <div @click.stop="toggle" class="op-btn">
+                <i class="fa" :class="[{'fa-pause-circle-o': isPlaying},{'fa-play-circle-o': !isPlaying}]" ></i>
+          </div>
+        </div>
+        <div class="mini-operate">
+            <div class="mini-op-btn">
+              <i class="fa fa-bars"></i>
+            </div>
+        </div>
       </div>
   </div>
 </template>
@@ -62,6 +85,8 @@ import Scroll from 'base/scroll/scroll'
 import {getLyric} from 'api/song'
 import { mapGetters, mapMutations, mapActions  } from 'vuex'
 import ProgressBar from 'base/progress-bar/progress-bar'
+import animations from 'create-keyframe-animation'
+
 export default {
     components:{
       Scroll,
@@ -90,15 +115,67 @@ export default {
          setPlaystate: 'SET_PLAYINGSTATE',
          changeShow: 'CHANGE_SHOWPLAYER'
       }),
-      back(){
-        this.changeShow(false)
+      _changeShow(){
+        this.showPlayer === true ? this.changeShow(false): this.changeShow(true)
       },
-      stop(){
+      toggle(){
         this.isPlaying === true ? this.setPlaystate(false):this.setPlaystate(true)
       },
       formatt(num){
         let time_arr = ((num/60).toFixed(2)).toString().split('.')
         return time_arr[0] + ':' +time_arr[1]
+      },
+      enter(el, done){
+        const {x,y,scale} = this._getPosAndScale()
+        let animation = {
+          0: {
+            transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`
+          },
+          60: {
+            transform: `translate3d(0, 0, 0) scale(1.1)`
+          },
+          100:{
+            transform: `translate3d(0, 0, 0) scale(1)`
+          }
+        }
+        animations.registerAnimation({
+          name: 'move',
+          animation,
+          presets: {
+            duration: 400,
+            easing: 'linear'
+          }
+        })
+        animations.runAnimation(this.$refs.cdWrap, 'move', done)
+      },
+      afterEnter(){
+        animations.unregisterAnimation('move')
+        this.$refs.cdWrap.style.animation = ''
+      },
+      leave(el,done){
+        this.$refs.cdWrap.style.transition = 'all 0.4s'
+        const {x,y,scale} = this._getPosAndScale()
+        this.$refs.cdWrap.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
+        this.$refs.cdWrap.addEventListener('transitionend', done)
+      },
+      afterLeave(){
+        this.$refs.cdWrap.style.transition = ''
+        this.$refs.cdWrap.style.transform = ''
+      },
+      _getPosAndScale(){
+        const targetWidth = 40
+        const paddingLeft = 40
+        const paddingBottom = 30
+        const paddingTop = 80
+        const cdwidth = window.innerWidth * 0.8
+        const scale = targetWidth / cdwidth
+        const x = -(window.innerWidth / 2 - paddingLeft)
+        const y = window.innerHeight - paddingTop - cdwidth / 2 - paddingBottom
+        return {
+          x,
+          y,
+          scale
+        }
       },
       _getSong () {
         this.song =  this.getPlayList[this.getCurrSongindex]
@@ -258,9 +335,62 @@ export default {
   position: fixed;
   left: 0;
   bottom: 0;
-  z-index: 180;
+  z-index: 100;
   width: 100%;
   height: 60px;
   background: #ffffff;
 }
+.mini-cd{
+  flex: 0 0 40px;
+  width: 40px;
+  padding: 0 10px 0 20px;
+}
+.mini-cd > img{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.song-infor{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  line-height: 20px;
+  overflow: hidden;
+}
+.song-infor > p {
+  .font(@color: @fontcolor; @lineheight: normal;@fontsize: .9rem);
+  .textcut();
+  margin-bottom: 4px;
+}
+.song-infor > span{
+  .font(@color: @lingtfontcolor; @lineheight: normal;@fontsize: .8rem);
+  .textcut();
+}
+.mini-operate{
+  width: 30px;
+  padding: 0 10px;
+}
+.mini-op-btn{
+  .font(@color: @maincolor; @lineheight: normal;@fontsize: 1.8rem);
+}
+.full-enter-active, .full-leave-active{
+   transition: all 0.4s
+}
+.full-enter-active >  .top, .bottom{
+    transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
+}
+.full-enter {opacity :1 }
+.full-leave-to{
+  opacity: 0;
+}
+.full-enter >  .top{
+  transform: translate3d(0, -100px, 0)
+}
+.full-enter > .bottom{
+  transform: translate3d(0, 100px, 0)
+}
+
+
+
 </style>
