@@ -28,7 +28,9 @@
                 也代表我已走远
               </div>
             </div>
-            <div class="middle-r"></div>
+            <div class="middle-r">
+
+            </div>
         </div>
         <div class="player-bottom bottom">
           <div class="drag-dot">
@@ -39,15 +41,15 @@
             <progress-bar :duration="formatt(currentSong.duration)"></progress-bar>
             <div class="operators">
               <div class="op-btn btn-left">
-                <i class="fa fa-retweet"></i>
+                <i class="fa" :class="iconMode" @click="changeMode" ></i>
               </div>
-              <div class="op-btn btn-left">
+              <div class="op-btn btn-left" @click="backward">
                 <i class="fa fa-backward"></i>
               </div>
               <div class="op-btn btn-center" @click="toggle">
                 <i class="fa" :class="[{'fa-pause': isPlaying},{'fa-play': !isPlaying}]" ></i>
               </div>
-              <div class="op-btn btn-right">
+              <div class="op-btn btn-right" @click="forward">
                 <i class="fa fa-forward"></i>
               </div>
               <div class="op-btn btn-right">
@@ -57,7 +59,7 @@
           </div>
         </div>
        </div>
-      </transition>
+    </transition>
       <div class="mini-player" v-show="!showPlayer" @click="_changeShow">
         <div class="mini-cd">
           <img :src="currentSong.imgurl" class="rotate" :class="{'pause':!isPlaying}">
@@ -77,6 +79,7 @@
             </div>
         </div>
       </div>
+      <audio ref="audio" :src="currentSong.url"  @play="ready" @error="error"></audio>
   </div>
 </template>
 
@@ -86,6 +89,7 @@ import {getLyric} from 'api/song'
 import { mapGetters, mapMutations, mapActions  } from 'vuex'
 import ProgressBar from 'base/progress-bar/progress-bar'
 import animations from 'create-keyframe-animation'
+import {playmode} from 'common/js/config'
 
 export default {
     components:{
@@ -97,12 +101,18 @@ export default {
          'showPlayer',
          'playList',
          'currentSong',
-         'isPlaying'
-      ])
+         'isPlaying',
+         'getMode',
+         'getCurrSongindex'
+      ]),
+      iconMode(){
+        return this.getMode === playmode.sequence ? 'fa-retweet' : 'fa-random'
+      },
     },
     data() {
       return {
-        lyric:''
+        lyric:'',
+        songReady: false
       }
     },
     created() {
@@ -112,8 +122,10 @@ export default {
 
       }),
       ...mapMutations({
-         setPlaystate: 'SET_PLAYINGSTATE',
-         changeShow: 'CHANGE_SHOWPLAYER'
+        setPlaystate: 'SET_PLAYINGSTATE',
+        changeShow: 'CHANGE_SHOWPLAYER',
+        setPlayMode: 'SET_PLAYMODE',
+        changeIndex: 'RECORD_CURRSONGINDEX'
       }),
       _changeShow(){
         this.showPlayer === true ? this.changeShow(false): this.changeShow(true)
@@ -124,6 +136,39 @@ export default {
       formatt(num){
         let time_arr = ((num/60).toFixed(2)).toString().split('.')
         return time_arr[0] + ':' +time_arr[1]
+      },
+      changeMode(){
+        this.getMode === playmode.sequence ? this.setPlayMode(playmode.random) : this.setPlayMode(playmode.sequence)
+      },
+      backward(){
+        if (!this.songReady) {
+          return
+        }
+        let index = this.getCurrSongindex - 1
+        if (index < 0) {
+          index = this.playList.length - 1
+        }
+        this.changeIndex(index)
+        if (!this.isPlaying) {this.toggle()}  // 添加判断songready是否为true以阻止快速点击
+        this.songReady = false
+      },
+      forward(){
+        if (!this.songReady) {
+          return
+        }
+        let index = this.getCurrSongindex + 1
+        if(index === this.playList.length) {
+            index = 0
+        }
+        this.changeIndex(index)
+        if(!this.isPlaying) {this.toggle()}
+        this.songReady = false
+      },
+      ready(){
+        this.songReady = true
+      },
+      error(){
+        this.songReady = true
       },
       enter(el, done){
         const {x,y,scale} = this._getPosAndScale()
@@ -186,6 +231,19 @@ export default {
           console.log(res)
         }) 
       }
+    },
+    watch:{
+        currentSong(){
+          this.$nextTick(() => {
+            this.$refs.audio.play()
+          })
+        },
+        isPlaying(newState){
+          const audio = this.$refs.audio
+          this.$nextTick(() => {
+            newState ? audio.play() : audio.pause()
+          })
+        }
     }
 }
 </script>
@@ -326,7 +384,7 @@ export default {
 .btn-left{text-align: right;}
 .btn-right{text-align: left;}
 .btn-center{text-align: center;}
-// fa fa-random  fa fa-retweet
+
 // fa fa-backward  fa fa-forward
 // fa fa-heart fa fa-heart-o
 .mini-player{
