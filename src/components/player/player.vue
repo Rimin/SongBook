@@ -52,7 +52,7 @@
               <div class="op-btn btn-right" @click="forward">
                 <i class="fa fa-forward"></i>
               </div>
-              <div class="op-btn btn-right">
+              <div class="op-btn btn-right" @click="collect">
                 <i class="fa fa-heart-o"></i>
               </div>
             </div>
@@ -79,7 +79,9 @@
             </div>
         </div>
       </div>
-      <audio ref="audio" :src="currentSong.url"  @play="ready" @error="error"></audio>
+      <audio ref="audio" @play="ready" @error="error">
+         <source :src="currentSong.url" type="audio/mpeg">
+      </audio>
   </div>
 </template>
 
@@ -90,7 +92,7 @@ import { mapGetters, mapMutations, mapActions  } from 'vuex'
 import ProgressBar from 'base/progress-bar/progress-bar'
 import animations from 'create-keyframe-animation'
 import {playmode} from 'common/js/config'
-
+import Lyric from 'lyric-parser'
 export default {
     components:{
       Scroll,
@@ -111,8 +113,9 @@ export default {
     },
     data() {
       return {
-        lyric:'',
-        songReady: false
+        lyric: {},
+        songReady: false,
+        isCollected: false
       }
     },
     created() {
@@ -139,6 +142,9 @@ export default {
       },
       changeMode(){
         this.getMode === playmode.sequence ? this.setPlayMode(playmode.random) : this.setPlayMode(playmode.sequence)
+      },
+      collect(){
+        
       },
       backward(){
         if (!this.songReady) {
@@ -222,28 +228,30 @@ export default {
           scale
         }
       },
-      _getSong () {
-        this.song =  this.getPlayList[this.getCurrSongindex]
-      //  console.log(this.song)
-      },
       _getLyric () {
-        getLyric(this.song.id).then((res) =>{
-          console.log(res)
-        }) 
+        this.currentSong.getLyric().then((lyric) => {
+          this.lyric = new Lyric(lyric)
+          console.log(this.lyric)
+        })
       }
     },
     watch:{
-        currentSong(){
+        currentSong(newSong, oldSong){
+          if(newSong.id === oldSong.id) {
+            return
+          }
           this.$nextTick(() => {
             this.$refs.audio.play()
+            this._getLyric()
           })
         },
         isPlaying(newState){
           const audio = this.$refs.audio
           this.$nextTick(() => {
-            newState ? audio.play() : audio.pause()
+             newState ? audio.play() : audio.pause()
           })
-        }
+        },
+
     }
 }
 </script>
@@ -384,8 +392,6 @@ export default {
 .btn-left{text-align: right;}
 .btn-right{text-align: left;}
 .btn-center{text-align: center;}
-
-// fa fa-backward  fa fa-forward
 // fa fa-heart fa fa-heart-o
 .mini-player{
   display: flex;
