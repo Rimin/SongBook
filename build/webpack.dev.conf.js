@@ -84,7 +84,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           res.json(ret)
          }).catch((e) => {
            console.log(e)
-         })
+         }).then((response) => {
+          console.log(response)
+        }).catch((e) => {
+           console.log(e)
+        })
+       }),
+       app.get('/api/music', function(req,res){
+         console.log(req.id)
+          var url = `http://ws.stream.qqmusic.qq.com/${req.id}.m4a?fromtag=46`
+          axios.get(url, {
+            headers: {
+              referer: 'https://c.y.qq.com/',
+              host: 'c.y.qq.com'
+            },
+          })
        })
     }
   },

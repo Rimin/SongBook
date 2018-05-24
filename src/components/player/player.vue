@@ -34,8 +34,8 @@
         </div>
         <div class="player-bottom bottom">
           <div class="drag-dot">
-            <span class="dot"></span>
-            <span class="dot"></span>
+            <span class="dot" :class="{'active': currentShow==='cd'}"></span>
+            <span class="dot" :class="{'active': currentShow==='lyric'}"></span>
           </div>
           <div class="play-control">
             <progress-bar :duration="formatt(currentSong.duration)"></progress-bar>
@@ -53,7 +53,7 @@
                 <i class="fa fa-forward"></i>
               </div>
               <div class="op-btn btn-right" @click="collect">
-                <i class="fa fa-heart-o"></i>
+                <i class="fa" :class="[{'fa-heart-o': !isCollected},{'fa-heart': isCollected}]"></i>
               </div>
             </div>
           </div>
@@ -115,10 +115,12 @@ export default {
       return {
         lyric: {},
         songReady: false,
-        isCollected: false
+        isCollected: false,
+        currentShow: 'cd'
       }
     },
     created() {
+      this.touch = {}
     },
     methods:{
       ...mapActions({
@@ -144,7 +146,8 @@ export default {
         this.getMode === playmode.sequence ? this.setPlayMode(playmode.random) : this.setPlayMode(playmode.sequence)
       },
       collect(){
-        
+        this.isCollected =  this.isCollected === false ? true : false
+        // and add or remove the collected song by vuex.....
       },
       backward(){
         if (!this.songReady) {
@@ -392,7 +395,6 @@ export default {
 .btn-left{text-align: right;}
 .btn-right{text-align: left;}
 .btn-center{text-align: center;}
-// fa fa-heart fa fa-heart-o
 .mini-player{
   display: flex;
   align-items: center;
@@ -454,7 +456,4 @@ export default {
 .full-enter > .bottom{
   transform: translate3d(0, 100px, 0)
 }
-
-
-
 </style>
