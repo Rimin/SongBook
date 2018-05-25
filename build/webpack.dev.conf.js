@@ -89,8 +89,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch((e) => {
            console.log(e)
         })
-       }),
-       app.get('/api/music', function(req,res){
+       })
+       /*app.get('/api/music', function(req,res){
          console.log(req.id)
           var url = `http://ws.stream.qqmusic.qq.com/${req.id}.m4a?fromtag=46`
           axios.get(url, {
@@ -99,7 +99,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
               host: 'c.y.qq.com'
             },
           })
-       })
+      })*/
     }
   },
   plugins: [

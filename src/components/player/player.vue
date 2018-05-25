@@ -243,7 +243,7 @@ export default {
           if(newSong.id === oldSong.id) {
             return
           }
-          this.$nextTick(() => {
+          this.$nextTick(() => {          
             this.$refs.audio.play()
             this._getLyric()
           })

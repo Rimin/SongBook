@@ -7,5 +7,6 @@ export const sequencelist = state => state.sequencelist
 export const getMode = state => state.mode
 export const isPlaying = state => state.playing
 export const currentSong = (state) => {
+  //  console.log(state.playlist[state.currSongindex])
   return state.playlist[state.currSongindex] || {}
 }

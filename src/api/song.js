@@ -1,4 +1,5 @@
 import axios from 'axios'
+import jsonp from 'common/js/jsonp'
 import {commonParams} from './config'
 
 export function getLyric (songmid) {
@@ -17,4 +18,25 @@ export function getLyric (songmid) {
   }).then((res) => {
     return Promise.resolve(res.data)
   })
+}
+
+export function getSongvkey (songmid) {
+  const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
+  const fun = 'MusicJsonCallback' + (Math.random() + '').replace('0.', '')
+  const data = Object.assign(commonParams, {
+    hostUin: 0,
+    loginUin: 0,
+    platform: 'yqq',
+    needNewCode: 0,
+    cid: '205361747',
+    callback: fun,
+    songmid: songmid,
+    guid: '1683627508',
+    filename: `C400${songmid}.m4a`
+  })
+  const option = {
+    param: 'jsonpCallback',
+    name: fun
+  }
+  return jsonp(url, data, option)
 }

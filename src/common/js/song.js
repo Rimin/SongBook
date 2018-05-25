@@ -1,4 +1,4 @@
-import {getLyric} from 'api/song'
+import {getLyric, getSongvkey} from 'api/song'
 import {ERR_OK} from 'api/config'
 import { Base64 } from 'js-base64'
 export class Song {
@@ -10,9 +10,16 @@ export class Song {
     this.albummid = albummid
     this.duration = duration
     this.imgurl = `https://y.gtimg.cn/music/photo_new/T002R300x300M000${albummid}.jpg?max_age=2592000`
-    this.url = `api/music?id=${id}`
+  // this.url = `http://dl.stream.qqmusic.qq.com/C400${id}.m4a?vkey=${this.vkey}&guid=1683627508&uin=1519493072&fromtag=66`
   }
-
+  getAudioUrl () {
+    getSongvkey(this.id).then((res) => {
+      if (res.code === ERR_OK) {
+        let k = res.data.items[0].vkey
+        this.url = `http://dl.stream.qqmusic.qq.com/C400${this.id}.m4a?vkey=${k}&guid=1683627508&uin=1519493072&fromtag=66`
+      }
+    })
+  }
   getLyric () {
     if (this.lyric) {
       return Promise.resolve(this.lyric)
